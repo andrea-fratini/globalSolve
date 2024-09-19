@@ -27,9 +27,13 @@ then some techinques among Chebyshev polynomials (code for collocation already i
 Methods needed:
 
 Residual function -> to find the zeros of the infinite dimensional problem
+
 Residual error -> to evaluate the model performance
+
 Matching moments -> to find the optimal value of the parameters in a D-dimensional grid
+
 Simulation -> to generate a path for the joint process
+
 Impulse Response -> to generate impulse response functions
 
 Method comparison -> uses previous techinques with same parameters to solve the model and returns policy functions and residual errors
