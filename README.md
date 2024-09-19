@@ -6,7 +6,7 @@ endogenous variables <- c("x", "y", "z", "z_m1", "x_1", "y_1")
 
 exogenous variables <- c("epsilon_z")
 
-parameters <- c("alpha", "gamma", "rho_z", "sigma_z")
+parameters <- c(alpha=num, gamma=num, rho_z=num, sigma_z=num)
 
 ## Equations
 
