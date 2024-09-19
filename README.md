@@ -37,3 +37,7 @@ Simulation -> to generate a path for the joint process
 Impulse Response -> to generate impulse response functions
 
 Method comparison -> uses previous techinques with same parameters to solve the model and returns policy functions and residual errors
+
+# Computational resources
+
+Be careful to reduce as much as possible the computational cost, i.e. if passing some R functions to c++ try to make less reads from the R environment as possible
