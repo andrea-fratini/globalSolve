@@ -1,76 +1,9 @@
-# Funzione per generare una funzione a partire da una formula e dai parametri
-formula2func <- function(formula_input, params) {
-  
-  # Estrazione delle variabili dalla formula (lato destro)
-  variabili <- all.vars(formula_input)[-1]  # Estrae le variabili (esclude 'y')
-  
-  # Estrazione dell'espressione dal lato destro della formula
-  expr_formula <- formula_input[[3]]
-  
-  # Funzione generata dinamicamente
-  funzione_generata <- function() {
-    args <- as.list(environment())  # Otteniamo gli argomenti passati alla funzione
-    
-    # Creiamo un nuovo ambiente che contiene gli argomenti e i parametri
-    envir <- list2env(c(args, params))  # Combiniamo parametri e variabili
-    
-    # Valutiamo l'espressione con le variabili e i parametri forniti
-    eval(expr_formula, envir = envir)
-  }
-  
-  # Definiamo formalmente gli argomenti della funzione dinamica
-  formals(funzione_generata) <- as.pairlist(setNames(vector("list", length(variabili)), variabili))
-  
-  return(funzione_generata)
-}
-
-# Esempio di utilizzo
-
-# Definire la formula
-formula <- y ~ a * x + d * z
-
-# Definire i parametri a = 1, d = 2
-parametri <- list(a = 1, d = 2)
-
-# Generare la funzione
-funzione_generata <- crea_funzione_da_formula(formula)
-
-# Esempio di esecuzione della funzione generata con x=3, z=5
-risultato <- funzione_generata(x = 3, z = 5)
-
-# Stampa il risultato numerico
-print(risultato)
-
-
-
-
-
-
-
-
-### Idee ed appunti:
+#### Idee ed appunti #####:
 
 # Visto che alcuni termini si ripetono all'interno delle formule
 # renderebbe il codice piu efficiente calcolare questi termini comuni solo una volta
 # e passarli come argomenti delle funzioni al posto delle variabili?
 # Se si modificare il codice per estrarli::::per ora estrae solo PARAMETRI E VARIABILI
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 rm(list=ls())
 
 set.seed(123)
