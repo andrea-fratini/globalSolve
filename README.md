@@ -4,9 +4,9 @@ Structure of the file submitted by the user (as in Dynare):
 
 endogenous variables <- $c("x", "y", "z", "z_{m1}", "x_1", "y_1")$
 
-exogenous variables <- c$("\epsilon_z")$
+exogenous variables <- c("\epsilon_z")
 
-parameters <- c$(\alpha=num, \gamma=num, \rho_z=num, sigma_z=num)$
+parameters <- c(alpha=num, gamma=num, rho_z=num, sigma_z=num)
 
 ## Equations
 
