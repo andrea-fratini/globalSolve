@@ -1,3 +1,7 @@
+rm(list=ls())
+set.seed(123)
+
+
 #### Idee ed appunti #####:
 
 # Visto che alcuni termini si ripetono all'interno delle formule
@@ -6,17 +10,7 @@
 # Se si modificare il codice per estrarli::::per ora estrae solo PARAMETRI E VARIABILI
 rm(list=ls())
 
-set.seed(123)
-
-library(Rtauchen)
-library(pracma)
-library(mpoly)
-library(MASS)
-library(rootSolve)
-library(BB)
-library(fBasics)
-library(plotly)
-library(splines)
+library(Rtauchen);library(pracma);library(mpoly);library(MASS);library(rootSolve);library(BB);library(fBasics);library(plotly);library(splines)
 
 
 f_Endo_b <- bp ~ r*(y+b-cc)
@@ -42,18 +36,21 @@ result <- lapply(split_vars, function(i) {
   }
 })
 
+result
+
 result <- Filter(Negate(is.null), result)
 
 result <- unlist(result)
 
 varz <- ls()
+eval(parse(text = result))
 
 param <- which(varz %in% all.vars(eval(parse(text = result[1])))[-1])
 
 eval(parse(text=varz[param]))
 
 bp <- formula2func(eval(parse(text = result[1])))
-
+?parse
 eval(parse(text = paste("bp(", varz[param], "=",eval(parse(text=varz[param])), ")")))
 
 # next_b <- function(y,B,cc,params){
