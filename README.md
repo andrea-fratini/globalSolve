@@ -2,7 +2,7 @@
 
 Structure of the file submitted by the user (as in Dynare):
 
-endogenous variables <- c("x", "y", "z", "z_m1", "x_1", "y_1")
+endogenous variables <- $c("x", "y", "z", "z_m1", "x_1", "y_1")$
 
 exogenous variables <- c("epsilon_z")
 
