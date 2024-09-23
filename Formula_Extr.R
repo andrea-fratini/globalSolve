@@ -15,8 +15,8 @@ f2f = function(input, param){
  
  dep = f_lhs(input)
  indep = f_rhs(input)
- param_env <- new.env()
- list2env(c(param, list(dep = dep, indep = indep)), envir = param_env)  # Inserisco i parametri nell'environment
+ param_env <- new.env() # create a new environment
+ list2env(c(param, list(dep = dep, indep = indep)), envir = param_env)  # Insert everything in the new environment
  
  val = eval(indep, envir = param_env)
  return(val)
