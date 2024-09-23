@@ -1,26 +1,9 @@
-### Idee ed appunti:
+#### Idee ed appunti #####:
 
 # Visto che alcuni termini si ripetono all'interno delle formule
 # renderebbe il codice piu efficiente calcolare questi termini comuni solo una volta
 # e passarli come argomenti delle funzioni al posto delle variabili?
 # Se si modificare il codice per estrarli::::per ora estrae solo PARAMETRI E VARIABILI
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 rm(list=ls())
 
 set.seed(123)
