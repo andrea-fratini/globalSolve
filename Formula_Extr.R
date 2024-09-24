@@ -1,5 +1,5 @@
 #install.packages("rlang")
-library(rlang)
+library(rlang);library(dplyr)
 
 ##### Let's try to build a function that preprocess a formula object in R #####
 
@@ -31,7 +31,7 @@ input = y ~ a * x + d * z
 f2f(input, param)
 
 
-##### Let's move on and try to undestand how to work with real equations ####
+##### Let's move on and try to understand how to work with real equations ####
 
 f_Endo_b = bp ~ r*(y+b-cc)
 
@@ -45,6 +45,11 @@ f_Val_fun  = v ~ cc^(1-ggamma)/(1-ggamma) + bbeta*vp
 compose_function = function(..., param){
  #' @param ... set of equations defined by the user
  #' @param param list of parameters defined
+ #' @description
+  #' The idea of this function is pretty straightforward. Given a set of functions
+  #' given by the user following a certain order, it automatically find the formulas
+  #' and the associated parameters to each function. In this way, it is also possible
+  #' to update easily the parameters.
  
  stor = list()
  if(!is.list(param)){ # start with a check
@@ -56,8 +61,11 @@ compose_function = function(..., param){
  fun_names = sapply(substitute(...()), deparse)
  ass_for = list(...)
 
- for (i in 1:length(fun_names)) {
 
+ for (i in 1:length(fun_names)) {
+  param_to_add = all.vars(f_rhs(ass_for[[i]]))[(all.vars(f_rhs(ass_for[[i]])) %in% names(param)) == F] 
+  param = append(param, rep(1, length(param_to_add)))
+  names(param)[names(param) == ""] = param_to_add
   actual_param = param[names(param) %in% all.vars(f_rhs(ass_for[[i]]))]
   stor[[fun_names[i]]] <- list(input = ass_for[[i]], params = actual_param )
  }
@@ -66,10 +74,6 @@ compose_function = function(..., param){
  
 }
 
-
-fun_names = compose_function(f_Endo_b, f_Euler_cons, f_Euler_price, f_Val_fun,
+ass_for = compose_function(f_Endo_b, f_Euler_cons, f_Euler_price, f_Val_fun,
                              param = list(r = 1.025, bbeta = 0.99, ggamma = 2, 
                                           aalpha = 0.133, phi = 0.2))
-
-
-
