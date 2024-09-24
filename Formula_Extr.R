@@ -33,13 +33,15 @@ f2f(input, param)
 
 ##### Let's move on and try to understand how to work with real equations ####
 
-f_Endo_b = bp ~ r*(y+b-cc)
+parameters <- list(bbeta=0.99, ggamma=2, r=1.025, rho_z=0.6, sigma_z=0.02)
 
-f_Euler_cons = cc^(-ggamma) ~ bbeta*r*ccp^(-ggamma) + mu
+grids <- list(b=c(-0.7, 0)) # defines the support of b 
 
-f_Euler_price = q ~ bbeta*(ccp^(-ggamma)*(qp + aalpha*yp))/(cc^(-ggamma)-phi*mu)
+f_Euler_cons <- cc^(-ggamma) ~ bbeta*r*cc_1^(-ggamma)
 
-f_Val_fun  = v ~ cc^(1-ggamma)/(1-ggamma) + bbeta*vp
+f_Endo_b <- b_1 ~ exp(z) + b - cc
+
+exo_z <- z ~ rho_z*z_m1 + epsilon_z
 
 
 compose_function = function(..., param){
@@ -66,7 +68,7 @@ compose_function = function(..., param){
   param_to_add = all.vars(f_rhs(ass_for[[i]]))[(all.vars(f_rhs(ass_for[[i]])) %in% names(param)) == F] 
   param = append(param, rep(1, length(param_to_add)))
   names(param)[names(param) == ""] = param_to_add
-  actual_param = param[names(param) %in% all.vars(f_rhs(ass_for[[i]]))]
+  actual_param = param[names(param) %in% all.vars(f_rhs(ass_for[[i]]))] # forse da rimuovere
   stor[[fun_names[i]]] <- list(input = ass_for[[i]], params = actual_param )
  }
  return(stor)
@@ -74,6 +76,5 @@ compose_function = function(..., param){
  
 }
 
-ass_for = compose_function(f_Endo_b, f_Euler_cons, f_Euler_price, f_Val_fun,
-                             param = list(r = 1.025, bbeta = 0.99, ggamma = 2, 
-                                          aalpha = 0.133, phi = 0.2))
+ass_for = compose_function(f_Endo_b, f_Euler_cons, exo_z,
+                             param = parameters)
