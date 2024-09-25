@@ -1,3 +1,8 @@
+# Notation
+#
+# x = x_{t}, x_m1 = x_{t-1}, x_1 = x_{t+1}
+#
+
 #install.packages("rlang")
 library(rlang);library(dplyr)
 
