@@ -1,7 +1,48 @@
 # Notation
 #
 # x = x_{t}, x_m1 = x_{t-1}, x_1 = x_{t+1}
+
+
+
+library(Rtauchen)
+
+
+
+
+
+
+Rtauchen::Rtauchen()
+Rtauchen::Tgrid()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 #
+
+rm(list=ls())
 
 #install.packages("rlang")
 library(rlang);library(dplyr)
@@ -28,13 +69,34 @@ f2f = function(input, param){
 }
 
 
-
+f_rhs(f_Euler_cons)
 
 param <- list(a = 1, d = 2, x = 2, z = 3)
 input = y ~ a * x + d * z
 
 f2f(input, param)
 
+param_to_add = all.vars(f_rhs(f_Euler_cons))[(all.vars(f_rhs(f_Euler_cons)) %in% names(parameters)) == F]
+
+param_to_add
+
+variables <- strsplit(param_to_add, "_")
+
+paste0("robaccia ", variables[[3]])
+
+
+lapply(variables, check_vars, list_of_vars=varz)
+
+check_vars(variables[[2]], varz)
+
+unlist(varz)
+
+if(variables[[2]][2] %in% paste0(1:10)){
+  return(as.numeric(var[2]))
+}
+
+
+class(variables[[2]])
 
 ##### Let's move on and try to understand how to work with real equations ####
 
@@ -42,7 +104,9 @@ parameters <- list(bbeta=0.99, ggamma=2, r=1.025, rho_z=0.6, sigma_z=0.02)
 
 grids <- list(b=c(-0.7, 0)) # defines the support of b 
 
-f_Euler_cons <- cc^(-ggamma) ~ bbeta*r*cc_1^(-ggamma)
+varz <- c("cc")
+
+f_Euler_cons <- cc^(-ggamma) ~ bbeta*r*cc_1^(-ggamma) + bbeta * cc_m1
 
 f_Endo_b <- b_1 ~ exp(z) + b - cc
 
