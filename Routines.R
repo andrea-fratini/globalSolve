@@ -55,7 +55,7 @@ wrapper_chebyshev <- function(technical_params, variables){
   
   nodes <- lapply(grids_specification, function(spec){chebyshev_nodes(spec[3])})
   
-  return(tensor_product_chebyshev(nodes, technical_params$poly_type$degree))
+  return(tensor_product_chebyshev(nodes, technical_params$basis_type$degree))
   
 }
 
@@ -76,7 +76,10 @@ wrapper_basis <- function(technical_params, variables){
     
   }
   
+  return(Basis)
+  
 }
+
 
 
 ################# Error handling ##################
@@ -236,8 +239,10 @@ Timing <- check_and_timing(Ordered_focs$FOCs, variables, parameters)
 
 shocks_grids <- shocks_grids_and_probabilities(variables, parameters, technical_params)
 
+Basis <- wrapper_basis(technical_params, variables)
 
-System <- function(FOCs, variables, parameters, technical_params, Ordered_focs, Timing, shocks_grids){
+
+System <- function(FOCs, variables, parameters, technical_params, Ordered_focs, Timing, shocks_grids, basis, coeffs){
   
   # expand grids for exogenous processes
   
@@ -253,17 +258,29 @@ System <- function(FOCs, variables, parameters, technical_params, Ordered_focs, 
   
   n_state_exo <- dim(exo_grid)[1]
   
+  n_endo <- length(variables$endogenous)
+  
+  # coeffs structure
+  
+  coeffs <- array(coeffs, dim=c(n_endo, technical_params$basis_type$degree^(n_endo), n_exo)) # da capire le dimensioni
+  
   for(exo in 1:n_exo){
     
     exo_b1 <- exo_grid[exo]
     exo_idx_b1 <- exo_grid_idx[exo]
+    
+    temp_coeffs <- coeffs[,,n_exo]
+    
+    state_exo_ <- exo_grid
     
     for(state_exo in 1:n_state_exo){
       
       state_exo_b1 <- state_exo_grid[state_exo]
       state_exo_idx_b1 <- state_exo_grid_idx[state_exo]
       
-      BASIS
+      endo_ <- coeffs %*% t(basis[state_exo,]) # assicurarsi che l'ordine del tensor product sia lo stesso della griglia 
+      
+      
       
     }
 
