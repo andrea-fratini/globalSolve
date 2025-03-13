@@ -1,3 +1,5 @@
+rm(list=ls())
+
 ############### Basis Functions #######
 
 #### chebyshev 
@@ -47,7 +49,7 @@ wrapper_chebyshev <- function(technical_params, variables){
   if(length(grids_specification) != length(variables$state_endogenous)){
     
     stop(paste("The number of state endgenous", length(variables$state_endogenous), 
-               "does not match the number of grids specifications", length(grids_specification)))
+               "does not match the number of grids specifications", length(grids_specification)), call. = F)
       
   }
   
@@ -57,10 +59,29 @@ wrapper_chebyshev <- function(technical_params, variables){
   
 }
 
+## wrapper basis
+
+wrapper_basis <- function(technical_params, variables){
+  
+  if(! technical_params$basis_type$type %in% c("Chebyshev")){
+    
+    stop(paste(technical_params$basis_type$type, 
+               "not in the list of supported basis functions"), call. = F)
+    
+  }
+  
+  if(technical_params$basis_type$type == "Chebyshev"){
+    
+    Basis <- wrapper_chebyshev(technical_params, variables)
+    
+  }
+  
+}
+
 
 ################# Error handling ##################
 
-rm(list=ls())
+
 
 
 # Set of functions to obtain the hierarchical structure
@@ -192,7 +213,7 @@ shocks_grids_and_probabilities <- function(variables, parameters, technical_para
 
 technical_params <- list(n_grid=c(10,5), width_grid=c(3,3),
                          state_endo_grids=list(b=c(-0.7, 0, 10)),
-                         poly_type=list(type="chebyshev", degree=3))
+                         basis_type=list(type="Chebyshev", degree=3))
 
 variables <- list(endogenous=c("cc"), state_endogenous=c("b"), 
                   state_exogenous=c("z", "r"), shocks=c("epsz", "epsr"))
