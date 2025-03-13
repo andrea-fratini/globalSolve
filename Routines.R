@@ -1,6 +1,67 @@
+############### Basis Functions #######
+
+#### chebyshev 
+
+library(pracma)
+
+chebyshev_nodes <- function(n){cos(pi * (2*(1:n)- 1)/(2*n))}
+
+# Function to shrink grid values to Chebyshev space (-1,1)
+shrink_grid_chebyshev <- function(grid) {
+  return(2 * (grid - min(grid)) / (max(grid) - min(grid)) - 1)
+}
+
+# Function to expand back from Chebyshev space to original scale
+expand_grid_chebyshev <- function(grid) {
+  return((1 + grid) * (max(grid) - min(grid)) / 2 + min(grid))
+}
+
+# Function to compute Chebyshev polynomials up to a given degree
+chebyshev <- function(grid, degree) {
+  x <- grid
+  ret_cheb <- matrix(NA, nrow = length(x), ncol = degree)
+  
+  for (i in 0:(degree - 1)) {
+    ret_cheb[, i + 1] <- chebPoly(n = i, x = as.matrix(x))  # Compute Chebyshev polynomial
+  }
+  
+  return(ret_cheb)
+}
+
+# Compute the tensor product of Chebyshev polynomials across multiple dimensions
+tensor_product_chebyshev <- function(grids, degree) {
+  
+  # Compute Chebyshev polynomials for each grid separately
+  cheb_list <- lapply(grids, function(grid) chebyshev(grid, degree))
+  
+  # Take the Kronecker product across all dimensions
+  tensor_cheb <- Reduce(kronecker, cheb_list)
+  
+  return(tensor_cheb)
+}
+
+wrapper_chebyshev <- function(technical_params, variables){
+  
+  grids_specification <- technical_params$state_endo_grids
+  
+  if(length(grids_specification) != length(variables$state_endogenous)){
+    
+    stop(paste("The number of state endgenous", length(variables$state_endogenous), 
+               "does not match the number of grids specifications", length(grids_specification)))
+      
+  }
+  
+  nodes <- lapply(grids_specification, function(spec){chebyshev_nodes(spec[3])})
+  
+  return(tensor_product_chebyshev(nodes, technical_params$poly_type$degree))
+  
+}
+
+
 ################# Error handling ##################
 
 rm(list=ls())
+
 
 # Set of functions to obtain the hierarchical structure
 
@@ -96,65 +157,99 @@ check_and_timing <- function(FOCs, list_of_vars, params) {
   return(result)
 }
 
+#Extract timing for classes of variables
 
+extract_timing <- function(timing, variables){
+  return(timing[which(names(timing) %in% variables$state_exogenous)])
+}
+
+# Function to generate grids and transition matrices
+
+shocks_grids_and_probabilities <- function(variables, parameters, technical_params){
+  
+  exo <- variables$state_exogenous
+  Grids <- list()
+  Probs <- list()
+  
+  for(i in 1:length(exo)){
+    Probs[[exo[i]]] <- Rtauchen::Rtauchen(technical_params$n_grid[i],# it might be a vetor of different dimensions
+                                          parameters$sigma_[i],
+                                          parameters$rho_[i],
+                                          technical_params$width_grid[i])
+    
+    Grids[[exo[i]]] <- Rtauchen::Tgrid(technical_params$n_grid[i],# it might be a vetor of different dimensions
+                                       parameters$sigma_[i],
+                                       parameters$rho_[i],
+                                       technical_params$width_grid[i]) + parameters$mu_[i]
+  }
+  
+  return(list(Grids=Grids, Probs=Probs))
+  
+}
 
 
 ########### example ############
 
-technical_params <- list(n_grid=10 # it might be a vetor of different dimensions
-                         )
+technical_params <- list(n_grid=c(10,5), width_grid=c(3,3),
+                         state_endo_grids=list(b=c(-0.7, 0, 10)),
+                         poly_type=list(type="chebyshev", degree=3))
 
 variables <- list(endogenous=c("cc"), state_endogenous=c("b"), 
-                  state_exogenous=c("z"), shocks=c("epsz"))
+                  state_exogenous=c("z", "r"), shocks=c("epsz", "epsr"))
 
-parameters <- list(bbeta=0.99, ggamma=2, r=1.025, 
-                   rho_z=0.6, sigma_z=0.02 #
-                   )
+parameters <- list(bbeta=0.99, ggamma=2, mu_=c(z=0,r=1.025), 
+                   rho_=c(z=0.6, r=0.8), sigma_=c(z=0.02, r=0.03))
 
 grids <- list(b=c(-0.7, 0))
 
 FOCs <- list(f_Euler_cons = cc^(-ggamma) ~ bbeta*r*cc_f1^(-ggamma),
              f_Endo_b = b_f1 ~ exp(z) + b - cc,
-             exo_z = z ~ rho_z*z_b1 + epsz)
+             exo_z = z ~ rho_z*z_b1 + epsz,
+             exo_r = r ~ rho_r*r_b1 + epsr)
 
 Ordered_focs <- hierarchical_structure(FOCs, variables)
 
 Timing <- check_and_timing(Ordered_focs$FOCs, variables, parameters)
 
-shocks_grids_and_probabilities <- function(variables, parameters, technical_params){
-  exo <- names(variables$state_exogenous)
-  Grids <- matrix(NA, nrow = technical_params$n_grid, # it might be a vetor of different dimensions
-                  ncol = length(exo))
-  Probs <- array(NA, dim = c(technical_params$n_grid, technical_params$n_grid, # it might be a vetor of different dimensions
-                             length(exo)))
-  for(i in 1:length(exo)){
-    Rtauchen::Rtauchen(technical_params$n_grid,# it might be a vetor of different dimensions
-                       parameters,
-                       parameters,
-                       parameters)
-    Rtauchen::Tgrid(technical_params$n_grid,# it might be a vetor of different dimensions
-                    parameters,
-                    parameters,
-                    parameters)
+ ### modify
+
+shocks_grids <- shocks_grids_and_probabilities(variables, parameters, technical_params)
+
+
+System <- function(FOCs, variables, parameters, technical_params, Ordered_focs, Timing, shocks_grids){
+  
+  # expand grids for exogenous processes
+  
+  exo_grid <- expand.grid(shocks_grids$Grids)
+  
+  exo_grid_idx <- expand.grid(lapply(technical_params$n_grid, seq_len)); names(exo_grid_idx) <- names(exo_grid)
+  
+  n_exo = dim(exo_grid)[1]
+
+  state_exo_grid <- expand.grid(technical_params$state_endo_grids)
+  
+  state_exo_grid_idx <- expand.grid(lapply(lapply(technical_params$state_endo_grids, length), seq_len)); names(exo_grid_idx) <- names(exo_grid)
+  
+  n_state_exo <- dim(exo_grid)[1]
+  
+  for(exo in 1:n_exo){
+    
+    exo_b1 <- exo_grid[exo]
+    exo_idx_b1 <- exo_grid_idx[exo]
+    
+    for(state_exo in 1:n_state_exo){
+      
+      state_exo_b1 <- state_exo_grid[state_exo]
+      state_exo_idx_b1 <- state_exo_grid_idx[state_exo]
+      
+      BASIS
+      
+    }
+
   }
-} ### modify
-
-System <- function()
-
+  
+}
 
 
 
 
-# 
-# 
-# check_and_timing(FOCs, variables)
-# 
-# variables <- unique(unlist(...))
-# 
-# varia <- lapply(FOCs, function(foc) setdiff(all.vars(foc), names(parameters)))
-# 
-# 
-# 
-# n_state_endo <- lapply(varia, function(v){sum(v %in% c(variables$state_endogenous))})
-# 
-# n_exo-n_state_endo
