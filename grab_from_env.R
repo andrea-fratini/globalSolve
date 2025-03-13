@@ -85,11 +85,11 @@ value_fun.right <- function(cont.value, cons_guess, params){
 
 residuals.complete.tot.model.switching_multiplier_splines_baseline <- function(Coeffs, resid.params){
   
-  B_basis = resid.params$B_basis
-  
-  #  regimes <- resid.params$regimes
-  
-  params = resid.params$params
+  # B_basis = resid.params$B_basis
+  # 
+  # #  regimes <- resid.params$regimes
+  # 
+  # params = resid.params$params
   
   val_guess_lhs <- numeric(params$B_dim)
   cons_guess_lhs <- numeric(params$B_dim)
@@ -97,13 +97,13 @@ residuals.complete.tot.model.switching_multiplier_splines_baseline <- function(C
   cons_guess_lhs_lim <- numeric(params$B_dim)
   mu_guess <- numeric(params$B_dim)
   
-  totpar <- params$Y_dim*params$B_dim*4
-  
-  Coeffs_val <- matrix(Coeffs[1:(totpar/4)], nrow = params$N_coeffs, ncol = params$Y_dim)
-  Coeffs_cons <- matrix(Coeffs[((totpar/4) +1):(2*totpar/4)], nrow = params$N_coeffs, ncol = params$Y_dim)
-  Coeffs_price <- matrix(Coeffs[((2*totpar/4) +1):(3*totpar/4)],nrow = params$N_coeffs, ncol = params$Y_dim)
-  Coeffs_mu <- matrix(Coeffs[((3*totpar/4) +1):totpar], nrow = params$N_coeffs, ncol = params$Y_dim)
-  
+  # totpar <- params$Y_dim*params$B_dim*4
+  # 
+  # Coeffs_val <- matrix(Coeffs[1:(totpar/4)], nrow = params$N_coeffs, ncol = params$Y_dim)
+  # Coeffs_cons <- matrix(Coeffs[((totpar/4) +1):(2*totpar/4)], nrow = params$N_coeffs, ncol = params$Y_dim)
+  # Coeffs_price <- matrix(Coeffs[((2*totpar/4) +1):(3*totpar/4)],nrow = params$N_coeffs, ncol = params$Y_dim)
+  # Coeffs_mu <- matrix(Coeffs[((3*totpar/4) +1):totpar], nrow = params$N_coeffs, ncol = params$Y_dim)
+  # 
   res.v <- matrix(0, nrow = params$N_coeffs, ncol = params$Y_dim)
   res.c <- matrix(0, nrow = params$N_coeffs, ncol = params$Y_dim)
   res.q <- matrix(0, nrow = params$N_coeffs, ncol = params$Y_dim)
@@ -111,52 +111,52 @@ residuals.complete.tot.model.switching_multiplier_splines_baseline <- function(C
   
   for(y in 1:params$Y_dim){
     
-    # COEFFICIENTS for the VALUE FUNCTION for a fixed Y
-    Vcoeffs_given_y <- Coeffs_val[,y] 
-    # COEFFICIENTS for CONSUMPTION for a fixed Y
-    Ccoeffs_given_y <- Coeffs_cons[,y] 
-    # COEFFICIENTS for the ASSET PRICES for a fixed Y
-    Pcoeffs_given_y <- Coeffs_price[,y] 
-    # COEFFICIENTS for the MULTIPLIER for a fixed Y
-    Mcoeffs_given_y <- Coeffs_mu[,y]
-    
-    # store debt (ignoring if the constraint is binding)
-    b_next <- numeric(params$B_dim) 
-    # store debt
-    b_next_lim <- numeric(params$B_dim) 
+    # # COEFFICIENTS for the VALUE FUNCTION for a fixed Y
+    # Vcoeffs_given_y <- Coeffs_val[,y] 
+    # # COEFFICIENTS for CONSUMPTION for a fixed Y
+    # Ccoeffs_given_y <- Coeffs_cons[,y] 
+    # # COEFFICIENTS for the ASSET PRICES for a fixed Y
+    # Pcoeffs_given_y <- Coeffs_price[,y] 
+    # # COEFFICIENTS for the MULTIPLIER for a fixed Y
+    # Mcoeffs_given_y <- Coeffs_mu[,y]
+    # 
+    # # store debt (ignoring if the constraint is binding)
+    # b_next <- numeric(params$B_dim)
+    # # store debt
+    # b_next_lim <- numeric(params$B_dim)
     
     for(b in 1:params$B_dim){
       
       # Calculate the value function V(b, s)
       
-      val_guess_lhs[b] <- B_basis[b,]%*%Vcoeffs_given_y 
-      
-      # Calculate consumption c(b, s)
-      
-      cons_guess_lhs[b] <- B_basis[b,]%*%Ccoeffs_given_y 
-      
-      # Calculate asset prices q(b, s)
-      
-      price_guess_lhs[b] <- B_basis[b,]%*%Pcoeffs_given_y 
-      
-      # Calculate mu mu(b,s)
-      
-      mu_guess[b] <- B_basis[b,]%*%Mcoeffs_given_y
+      # val_guess_lhs[b] <- B_basis[b,]%*%Vcoeffs_given_y 
+      # 
+      # # Calculate consumption c(b, s)
+      # 
+      # cons_guess_lhs[b] <- B_basis[b,]%*%Ccoeffs_given_y 
+      # 
+      # # Calculate asset prices q(b, s)
+      # 
+      # price_guess_lhs[b] <- B_basis[b,]%*%Pcoeffs_given_y 
+      # 
+      # # Calculate mu mu(b,s)
+      # 
+      # mu_guess[b] <- B_basis[b,]%*%Mcoeffs_given_y
       
       # store for which values of b'(b, s) the constraint binds
       
-      binds <- numeric(params$B_dim) 
-      
-      if(cons_guess_lhs[b] <0){
-        cons_guess_lhs[b] <- 1e-1
-      } 
-      
-      if(price_guess_lhs[b] < 0){
-        price_guess_lhs[b] <- 1e-1
-      }
-      
-      y_current <- params$y_grid[y]
-      b_current <- params$B_grid[b]
+      # binds <- numeric(params$B_dim) 
+      # 
+      # if(cons_guess_lhs[b] <0){
+      #   cons_guess_lhs[b] <- 1e-1
+      # } 
+      # 
+      # if(price_guess_lhs[b] < 0){
+      #   price_guess_lhs[b] <- 1e-1
+      # }
+      # 
+      # y_current <- params$y_grid[y]
+      # b_current <- params$B_grid[b]
       
       # Calculate b'(b, s) = R*(y+b-c(b, s))
       # at the beginning b'(b, s) = b'_{constrained}(b, s)
@@ -166,16 +166,16 @@ residuals.complete.tot.model.switching_multiplier_splines_baseline <- function(C
       
       # check if - b'(b, s)/R <= φ*q(b, s)
       
-      borr_lim <- b_next[b]/params$R + params$phi*price_guess_lhs[b]
-      
-      if(borr_lim<0){
-        
-        b_next_lim[b] <- -params$R*params$phi*price_guess_lhs[b] 
-        
-        cons_guess_lhs_lim[b] <- y_current+b_current-b_next_lim[b]/params$R
-        
-        binds[b] <- 1
-      }
+      # borr_lim <- b_next[b]/params$R + params$phi*price_guess_lhs[b]
+      # 
+      # if(borr_lim<0){
+      #   
+      #   b_next_lim[b] <- -params$R*params$phi*price_guess_lhs[b] 
+      #   
+      #   cons_guess_lhs_lim[b] <- y_current+b_current-b_next_lim[b]/params$R
+      #   
+      #   binds[b] <- 1
+      # }
       
       # THE FOLLOWING CHECKS ARE NEEDED TO ENSURE THAT 
       # b'(b, s) DOESN'T MOVE OUTSIDE ITS DOMAIN [-0.7,0]

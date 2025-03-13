@@ -50,12 +50,14 @@ wrapper_chebyshev <- function(technical_params, variables){
     
     stop(paste("The number of state endgenous", length(variables$state_endogenous), 
                "does not match the number of grids specifications", length(grids_specification)), call. = F)
-      
+    
   }
   
   nodes <- lapply(grids_specification, function(spec){chebyshev_nodes(spec[3])})
   
-  return(tensor_product_chebyshev(nodes, technical_params$basis_type$degree))
+  
+  
+  return(list(basis=tensor_product_chebyshev(nodes, technical_params$basis_type$degree), nodes=nodes))
   
 }
 
@@ -72,15 +74,14 @@ wrapper_basis <- function(technical_params, variables){
   
   if(technical_params$basis_type$type == "Chebyshev"){
     
-    Basis <- wrapper_chebyshev(technical_params, variables)
+    Basis_nodes <- wrapper_chebyshev(technical_params, variables)
+    
     
   }
   
-  return(Basis)
+  return(Basis_nodes)
   
 }
-
-
 
 ################# Error handling ##################
 
@@ -241,8 +242,9 @@ shocks_grids <- shocks_grids_and_probabilities(variables, parameters, technical_
 
 Basis <- wrapper_basis(technical_params, variables)
 
+time_span <- unique(unlist(Timing))
 
-System <- function(FOCs, variables, parameters, technical_params, Ordered_focs, Timing, shocks_grids, basis, coeffs){
+System <- function(FOCs, variables, parameters, technical_params, Ordered_focs, Timing, shocks_grids, basis, coeffs, time_span){
   
   # expand grids for exogenous processes
   
@@ -252,7 +254,7 @@ System <- function(FOCs, variables, parameters, technical_params, Ordered_focs, 
   
   n_exo = dim(exo_grid)[1]
 
-  state_exo_grid <- expand.grid(technical_params$state_endo_grids)
+  state_exo_grid <- expand.grid(technical_params$state_endo_grids) # expand depending on the type of basis
   
   state_exo_grid_idx <- expand.grid(lapply(lapply(technical_params$state_endo_grids, length), seq_len)); names(exo_grid_idx) <- names(exo_grid)
   
@@ -264,26 +266,40 @@ System <- function(FOCs, variables, parameters, technical_params, Ordered_focs, 
   
   coeffs <- array(coeffs, dim=c(n_endo, technical_params$basis_type$degree^(n_endo), n_exo)) # da capire le dimensioni
   
-  for(exo in 1:n_exo){
+  # get the time span of the variables
+  
+  times <- unique(unlist(Timing))
+  
+  for(t in 1:(length(times)-1)){
     
-    exo_b1 <- exo_grid[exo]
-    exo_idx_b1 <- exo_grid_idx[exo]
+    to_update <- names(Timing)[sapply(Timing, function(x) any(x == times[t+1]))]
     
-    temp_coeffs <- coeffs[,,n_exo]
-    
-    state_exo_ <- exo_grid
-    
-    for(state_exo in 1:n_state_exo){
+    for(exo in 1:n_exo){
       
-      state_exo_b1 <- state_exo_grid[state_exo]
-      state_exo_idx_b1 <- state_exo_grid_idx[state_exo]
+      exo_b1 <- exo_grid[exo,]
+      exo_idx_b1 <- exo_grid_idx[exo,]
       
-      endo_ <- coeffs %*% t(basis[state_exo,]) # assicurarsi che l'ordine del tensor product sia lo stesso della griglia 
+      temp_coeffs <- coeffs[,,n_exo]
       
+      state_exo_ <- state_exo_grid # si potrebbe ottimizzare considerando solo le state exo che sono presenti in t=0
       
+      for(state_exo in 1:n_state_exo){
+        
+        state_exo_b1 <- state_exo_grid[state_exo]
+        state_exo_idx_b1 <- state_exo_grid_idx[state_exo]
+        
+        endo_ <- coeffs %*% t(basis[state_exo,]) # assicurarsi che l'ordine del tensor product sia lo stesso della griglia
+        # si potrebbe ottimizzare calcolando il prodotto solo per le endo presenti in t=0
+        
+        # calcolo le griglie per il prossimo periodo
+        
+        
+        
+        
+      }
       
     }
-
+    
   }
   
 }
