@@ -1,9 +1,9 @@
 # globalSolve
 
 The globalSolve package provides functions to solve DSGE models by means of global methods, the solution strategies already implemented are:
-  . Chebyshev polynomials (Tensor products)
-  . Triangular basis
-  . Smolyak polynomials
+  - Chebyshev polynomials (Tensor products)
+  - Triangular basis
+  - Smolyak polynomials
   
 Structure of the file submitted by the user (as in Dynare):
 
