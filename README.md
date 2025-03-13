@@ -28,7 +28,7 @@ To find a solution to such class of models **globalSolve** approximates the func
 
 $$
 \begin{aligned}
-V(k_t, z_t) = \max_{c_t, l_t} \frac{(c_t^{\tau} (1 - l_t)^{1 - \tau})^{1 - \eta}}{1 - \eta} + \beta \mathbb{E}_t V(k_{t+1}, z_{t+1}) \\
+V(k_t, z_t) = \max_{c_t, l_t} \frac{(c_t^{\tau} (1 - l_t)^{1 - \tau})^{1 - \eta}}{1 - \eta} + \beta \mathbb{E_{t}} V(k_{t+1}, z_{t+1}) \\
 \text{s.t. } k_{t+1} = e^{z_t} k_t^{\alpha} l_t^{1 - \alpha} + (1 - \delta) k_t - c_t \\
 z_t = \rho z_{t-1} + \epsilon_t \\
 \end{aligned}
