@@ -45,6 +45,5 @@ $$
 \frac{(c_t^{\tau} (1 - l_t)^{1 - \tau})^{1 - \eta}}{1 - \eta} + \beta \mathbb{E_{t}} g_{V}(k_{t+1}, z_{t+1}) - g_{V}(k_t, z_t) = 0\\
 \frac{\tau}{1-\tau} (1-\alpha) e^{z_{t}} k_{t}^{\alpha} g_{l}(k_t, z_t)^{-\alpha} (1-g_{l}(k_t, z_t)) - c_{t} = 0 \\
 k_{t+1} = e^{z_{t}} k_{t}^{\alpha} g_{l}(k_t, z_t)^{1-\alpha} + (1-\delta) k_{t} - c_{t}
-
 $$
 
