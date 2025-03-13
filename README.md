@@ -33,3 +33,18 @@ V(k_t, z_t) = \max_{c_t, l_t} \frac{(c_t^{\tau} (1 - l_t)^{1 - \tau})^{1 - \eta}
 z_t = \rho z_{t-1} + \epsilon_t \\
 \end{aligned}
 $$
+
+Assume for $l_{t}$ and $V_{t}$ decision rules $g_{x}$ of the form:
+$$
+g_{x}(k_t, z_t) = \displaystyle\sum_{i=0}^{K} \theta_{x,i} \varaphi(k_t, z_t)
+$$
+
+Then the problem to solve assumes the following structure:
+
+$$
+\frac{(c_t^{\tau} (1 - l_t)^{1 - \tau})^{1 - \eta}}{1 - \eta} + \beta \mathbb{E_{t}} g_{V}(k_{t+1}, z_{t+1}) - g_{V}(k_t, z_t) = 0\\
+\frac{\tau}{1-\tau} (1-\alpha) e^{z_{t}} k_{t}^{\alpha} g_{l}(k_t, z_t)^{-\alpha} (1-g_{l}(k_t, z_t)) - c_{t} = 0 \\
+k_{t+1} = e^{z_{t}} k_{t}^{\alpha} g_{l}(k_t, z_t)^{1-\alpha} + (1-\delta) k_{t} - c_{t}
+
+$$
+
