@@ -10,8 +10,10 @@ The solution strategies already implemented are:
 ## General problem
 
 $$
+\begin{aligned}
 z_{t}=h(z_{t-1}, \varepsilon_{z,t})\\
 x_{t+1} = g(x_{t}, z_{t})\\
 y_{t+1} = f(x_{t+1}, z_{t+1})
+\end{aligned}
 $$
   
