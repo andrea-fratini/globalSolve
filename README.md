@@ -35,6 +35,7 @@ z_t = \rho z_{t-1} + \epsilon_t \\
 $$
 
 Assume for $l_{t}$ and $V_{t}$ decision rules $g_{x}$ of the form:
+
 $$
 g_{x}(k_t, z_t) = \displaystyle\sum_{i=0}^{K} \theta_{x,i} \varaphi(k_t, z_t)
 $$
