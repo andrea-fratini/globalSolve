@@ -53,15 +53,15 @@ $$
 
 To represent the above group of conditions the package requires different specifications concerning:
   - **Nature of the variables**
-    - Exogenous ```c("z")```
-    - State Endogenous ```c("k")```
-    - Endogenous ```c("V", "l", "c")```
-    - Shocks ```c("epsz")```
+    - Exogenous ```exogenous=c("z")```
+    - State Endogenous ```state_endogenous=c("k")```
+    - Endogenous ```endogenous=c("V", "l", "c")```
+    - Shocks ```shocks=c("epsz")```
   - **Variables timing**
     - Backwards $t-k$:  ```x_bk```
     - In time $t$:  ```x```
     - Forward $t+k$ ```x_fk```
-  - **Parameters**
+  - **Parameters** ```list(tau=0.4, eta=0.3, beta=0.95, alpha=0.6, delta=0.1, rho_=c(z=0.6), sigma_=c(z=0.02), mu_=c(z=0)) ```
   - **Technical parameters**
       - Grids informations for the Exogenous variables: ```list(z=c(n_points, width_of_the_grid),  ...)```
       - Grids informations for the Endogenous state variables: ```list(k=c(min(grid), max(grid), n_points), ...)```
@@ -71,8 +71,19 @@ To represent the above group of conditions the package requires different specif
     - Endogenous state variables: ```f_State_Endo_x```
     - Endogenous variables: ```f_Endo_x```
   
+The complete code should look like this:
 
 ```{r}
+variables <- list(exogenous=c("z"), state_endogenous=c("k"),
+                  endogenous=c("V", "l", "c"), shocks=c("epsz"))
+
+parameters <- list(tau=0.4, eta=0.3, beta=0.95, alpha=0.6, delta=0.1,
+                   rho_=c(z=0.6), sigma_=c(z=0.02), mu_=c(z=0)) # mu_ is required if the process is not cenetered in 1 (or its log(*) in 0)
+
+technical_params <- list(exo_grids=list(z=c(n_points, width_of_the_grid)),
+                         state_endo_grids=list(b=c(-0.7, 0, 10), r=c(0.9, 1, 10)),
+                         basis_type=list(type="Chebyshev", ..parameters to be defines..))
+
 FOCs <- list(f_Endo_Value_fun = V ~ (c^(tau) (1-l)^(1-tau))^(1-eta) / (1-eta) + beta * V_f1
              f_Endo_Euler_cons = c ~ (tau) / (1-tau) exp(z) k^(alpha) l^(-alpha) * (1-l)
              f_State_Endo_k = k_f1 ~ exp(z) k^(alpha) l^(-alpha) + (1-delta) * k - c
