@@ -50,3 +50,8 @@ k_{t+1} = e^{z_{t}} k_{t}^{\alpha} g_{l}(k_t, z_t)^{1-\alpha} + (1-\delta) k_{t}
 \end{aligned}
 $$
 
+```{r}
+FOCs <- list()
+```
+
+
