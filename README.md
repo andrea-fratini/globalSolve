@@ -51,13 +51,32 @@ z_{t} = \rho_{z} z_{t-1} + \varepsilon_{z,t}
 \end{aligned}
 $$
 
-To represent the above group of conditions the package requires the following strcture:
-  - Exogenous state variables: ```exo_x```
-  - Endogenous state variables: ```f_State_Endo_x```
-  - Endogenous variables: ```f_Endo_x```
+To represent the above group of conditions the package requires different specifications concerning:
+  - **Nature of the variables**
+    - Exogenous ```c("z")```
+    - State Endogenous ```c("k")```
+    - Endogenous ```c("V", "l", "c")```
+    - Shocks ```c("epsz")```
+  - **Variables timing**
+    - Backwards $t-k$:  ```x_bk```
+    - In time $t$:  ```x```
+    - Forward $t+k$ ```x_fk```
+  - **Parameters**
+  - **Technical parameters**
+      - Grids informations for the Exogenous variables: ```list(z=c(n_points, width_of_the_grid),  ...)```
+      - Grids informations for the Endogenous state variables: ```list(k=c(min(grid), max(grid), n_points), ...)```
+      - Basis type and required parameters: ``basis_type=list(type="Chebyshev", ..parameters to be defines..)``
+  - **Equations**
+    - Exogenous state variables: ```exo_x```
+    - Endogenous state variables: ```f_State_Endo_x```
+    - Endogenous variables: ```f_Endo_x```
+  
 
 ```{r}
-FOCs <- list(f_Endo_Value_fun= (c^(tau)
+FOCs <- list(f_Endo_Value_fun = V ~ (c^(tau) (1-l)^(1-tau))^(1-eta) / (1-eta) + beta * V_f1
+             f_Endo_Euler_cons = c ~ (tau) / (1-tau) exp(z) k^(alpha) l^(-alpha) * (1-l)
+             f_State_Endo_k = k_f1 ~ exp(z) k^(alpha) l^(-alpha) + (1-delta) * k - c
+             exo_z = z_f1 ~ rhoz * z + epsz
 )
 ```
 
