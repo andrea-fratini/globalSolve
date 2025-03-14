@@ -52,9 +52,9 @@ z_{t} = \rho_{z} z_{t-1} + \varepsilon_{z,t}
 $$
 
 To represent the above group of conditions the package requires the following strcture:
-  - Exogenous state variables: ```{r} exo_x```
-  - Endogenous state variables: ```{r} f_State_Endo_x```
-  - Endogenous variables: ```{r} f_Endo_x```
+  - Exogenous state variables: ```exo_x```
+  - Endogenous state variables: ```f_State_Endo_x```
+  - Endogenous variables: ```f_Endo_x```
 
 ```{r}
 FOCs <- list(f_Endo_Value_fun= (c^(tau)
